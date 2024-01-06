@@ -10,9 +10,9 @@ namespace WorkerService3
                 {
                     services.AddHostedService<Worker>();
                 })
-                .ConfigureThreadPool()
+                //.ConfigureThreadPool()
                 .Build();
-
+            var c=Environment.ProcessorCount;
             host.Run();
         }
     }

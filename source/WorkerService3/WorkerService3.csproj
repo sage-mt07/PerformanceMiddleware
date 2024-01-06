@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-WorkerService3-c4fbc5e4-1d50-4544-b220-c9d650119dfd</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\Performace</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>

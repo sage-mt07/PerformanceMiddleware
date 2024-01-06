@@ -1,11 +1,12 @@
-﻿{
+{
   "profiles": {
     "WorkerService3": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
-      }
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PROCESSOR_COUNT": "88"
+      },
+      "dotnetRunMessages": true
     }
   }
 }
