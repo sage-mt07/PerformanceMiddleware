@@ -1,36 +1,41 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Performace
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IHostApplicationBuilder ConfigureThreadPool(this IHostApplicationBuilder hostBuilder)
+        public static IHostBuilder ConfigureThreadPool(this IHostBuilder hostBuilder)
         {
-            var settings = hostBuilder.Configuration.Get<ThreadPoolSettings>();
-            ThreadPool.GetMinThreads(out int workerThreads, out int completionPortThreads);
-            if (workerThreads < settings.MinWorkerThreads)
-                workerThreads = settings.MinWorkerThreads;
-            if (completionPortThreads < settings.MinCompletionThreads)
-                completionPortThreads = settings.MinCompletionThreads;
-
-
-            if (settings != null)
+            return hostBuilder.ConfigureServices((context, services) =>
             {
-                ThreadPool.SetMinThreads(settings.MinWorkerThreads, settings.MinCompletionThreads);
-                _logger.LogInformation($"workerThreads={workerThreads} completionPortThreads={completionPortThreads}");
-            }
-            var monitor = new ThreadPoolMonitor();
-            monitor.ThreadPoolSizeIncreased += (current, previos) =>
-            {
-               // _logger.LogWarning("");
-            };
-            return hostBuilder;
+                var config = context.Configuration;
+                var logger = services.BuildServiceProvider().GetRequiredService<ILogger<object>>();
+                var settings = config.Get<ThreadPoolSettings>();
+                ThreadPool.GetMinThreads(out int workerThreads, out int completionPortThreads);
+                if (workerThreads < settings.MinWorkerThreads)
+                    workerThreads = settings.MinWorkerThreads;
+                if (completionPortThreads < settings.MinCompletionThreads)
+                    completionPortThreads = settings.MinCompletionThreads;
+
+                if (settings != null)
+                {
+
+                    ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
+                    logger.LogInformation($"workerThreads={workerThreads} completionPortThreads={completionPortThreads}");
+                }
+                var monitor = new ThreadPoolMonitor();
+                monitor.ThreadPoolSizeIncreased += (sender, arguments) =>
+                {
+                    logger.LogWarning($"warn---- {arguments.PreviousThreadCount} {arguments.CurrentThreadCount}");
+                };
+            });
+
         }
+
     }
+
+
 }
